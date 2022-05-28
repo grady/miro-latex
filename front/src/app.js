@@ -30,10 +30,12 @@ async function init(){
   document.getElementById('render-button').onclick = convert;
   document.getElementById('test-button').onclick =
     async function test() {
+      let id = await miro.board.getInfo();
       let token = await miro.board.getIdToken();
       //this await never resolves if not in a board?
       //console.log('test button firing', token);
-      let testcall = await fetch('http://localhost:3001', {
+      let testcall = await fetch(`http://localhost:3001/${id.id}/sticky`, {
+	method: 'POST',
 	headers: {
 	  Authorization: `Bearer ${token}`
 	}});
