@@ -1,0 +1,37 @@
+{
+  "name": "miro-latex",
+  "version": "0.0.1",
+  "description": "miro latex integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently --kill-others npm:vite npm:nodemon",
+    "nodemon": "nodemon -r dotenv/config server.js",
+    "vite": "vite",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "front/*"
+    ],
+    "watch": [
+      ".",
+      ".env"
+    ]
+  },
+  "author": "Grady Weyenberg",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.2.1",
+    "nodemon": "^2.0.16",
+    "vite": "^2.9.9"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "mirotone": "^2.0.9",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0",
+    "passport-oauth2": "^1.6.1"
+  }
+}
