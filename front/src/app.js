@@ -31,10 +31,16 @@ async function init(){
   document.getElementById('test-button').onclick =
     async function test() {
       let token = await miro.board.getIdToken();
+      //this await never resolves if not in a board?
+      //console.log('test button firing', token);
       let testcall = await fetch('http://localhost:3001', {
 	headers: {
 	  Authorization: `Bearer ${token}`
 	}});
+      if(testcall.status == 401){
+	miro.board.ui.openModal({url: 'http://localhost:3001/auth'});
+	console.log('unauth!!');
+      }
       console.log(`from fetch ${testcall.url}:`, await testcall.text());
       //console.log(testcall);
     };
