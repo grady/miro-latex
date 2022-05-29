@@ -6,7 +6,10 @@
     <link rel="stylesheet" href="/src/assets/style.css" />
     <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
     <script>
-      MathJax = {loader: {load:['ui/safe']}, startup: {}};
+      MathJax = {loader: {load:['ui/safe']},
+		 startup: {},
+		 options: {enableMenu: false}
+		};
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
   </head>
@@ -19,19 +22,30 @@
       </div>
 
       <div class="cs1 ce12">
-        <a class="button button-primary" id="render-button">
+        <button class="button button-primary" id="render-button" type="button">
           Render TeX
-        </a>
+        </button>
       </div>
       
       <div class="cs1 ce12 centered">
 	<h3>Drag output to board</h3>
         <div class="miro-draggable" id="texoutput">
-	  <p>\[f(x)=\frac12\sin(x^3)\]</p>
+	  \[f(x)=\frac12\sin(x^3)\]
 	</div>
-	<a class="button button-small button-primary" id="test-button">
+      </div>
+      <div class="cs1 ce6 centered">
+	<button class="button button-small button-primary centered"
+		type="button"
+		id="test-button">
 	  Test Button
-	</a>
+	</button>
+      </div>
+      <div class="cs7 ce12 centered">
+	<button class="button button-primary button-small centered"
+		type="button"
+		id="test2-button">
+	  Test2 button
+	</button>
       </div>
     </div>
     <script type="module" src="/src/app.js"></script>
