@@ -4,7 +4,7 @@
   "description": "miro latex integration",
   "main": "index.js",
   "scripts": {
-    "start": "node -r dotenv/config server.js",
+    "start": "node server.js",
     "dev": "concurrently --kill-others npm:vite npm:nodemon",
     "nodemon": "nodemon -r dotenv/config server.js",
     "vite": "vite",
@@ -38,5 +38,8 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-oauth2": "^1.6.1"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }

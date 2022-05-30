@@ -92,6 +92,6 @@ if(production) {
 const server = require('http')
       .createServer(app)
       .listen(
-	process.env.PORT,
+	process.env.PORT || 3001,
 	() => console.log(`Backend listening on ${server.address().port}`)
       );
