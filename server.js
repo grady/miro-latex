@@ -1,12 +1,13 @@
 const express = require('express');
 const morgan = require('morgan');
-const cors = require('cors');
 const passport = require('passport');
 const {Strategy: JWTStrategy, ExtractJwt} = require('passport-jwt');
 const OAuth2Strategy = require('passport-oauth2');
 const axios = require('axios');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const Redis = require('ioredis');
+
+const production = process.env.NODE_ENV === 'production';
 
 let redisClient = new Redis(process.env.UPSTASH_URL);
 
@@ -19,10 +20,6 @@ passport.use(new JWTStrategy({
   secretOrKey: process.env.MIRO_SECRET,
   issuer: 'miro'
 }, (payload, done) =>{
-  // redisClient.hget(payload.team, "access", (err,result) => {
-  //   console.log(result);
-  //   done(err, result);
-  // });
   redisClient.hget(payload.team, 'access', done);
 }));
 
@@ -40,7 +37,7 @@ passport.use(new OAuth2Strategy(
     //query the miro api for token info
     axios('https://api.miro.com/v1/oauth-token', {
       headers: {Authorization: "Bearer " + acc}
-    }).then(//place the token into the database and done
+    }).then(// store team.id = {access: token}
       result => {
 	redisClient.hmset(result.data.team.id,
 			  {access: acc},
@@ -53,13 +50,7 @@ passport.use(new OAuth2Strategy(
 
 const app = express();
 
-app.use(morgan('dev'));
-
-// setup CORS for the front/backend communication
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
-
+app.use(morgan( production ? 'common' : 'dev'));
 
 //this handles the backend authorization token
 //it finishes by redirecting to a page that double
@@ -72,28 +63,28 @@ app.use('/auth', passport.authenticate('oauth2', {session: false}));
 
 //this blocks anything not coming from the frontend client
 //client will respond to 401 by trying to reauthorize
-//app.use(passport.authenticate('jwt', {session: false}));
+app.use('/api', passport.authenticate('jwt', {session: false}));
 
 // proxy image posts to Miro API, replace the
 // frontend jwt token with our backend api token
-app.post('/:id/images',
-	 passport.authenticate('jwt', {session: false}),
+app.post('/api/:id/images',
 	 createProxyMiddleware({
 	   target:'https://api.miro.com/v2/boards/',
 	   changeOrigin: true,
+	   pathRewrite: {'^/api': ''},
 	   onProxyReq: (proxyReq, req, res) => {
 	     proxyReq.setHeader('Authorization',
 	      			"Bearer " + req.user);
 	   }
 	 }));
 
-// proxy the vite server in dev
-if(process.env.NODE_ENV != 'production') {
-  console.log('devel');
-  app.use(createProxyMiddleware({target:'http://localhost:3000/'}));
-} else {
-  console.log('production');
+
+if(production) {
+  // serve the build output in production
   app.use(express.static('dist'));
+} else { 
+  // proxy the vite server in dev
+  app.use(createProxyMiddleware({target:'http://localhost:3000/'}));  
 }
 
 

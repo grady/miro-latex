@@ -60,7 +60,7 @@ async function init(){
     fd.append('data', dataBlob);
     fd.append('resource', imageBlob, 'latex.svg');
     //POST. If 401 try to authorize in modal
-    fetch(`/${boardInfo.id}/images`, {
+    fetch(`/api/${boardInfo.id}/images`, {
       method: 'POST',
       headers: {Authorization: `Bearer ${token}`},
       body: fd
