@@ -14,40 +14,20 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
   </head>
   <body>
-    
-    <div class="grid wrapper">
-      <div class="cs1 ce12 centered">
-	<h3>Enter Tex String</h3>
-        <textarea id="texinput" class="textarea" rows="5" spellcheck="false">\int_0^1 \frac12 x^2</textarea>
-      </div>
-
-      <div class="cs1 ce12">
-        <button class="button button-primary" id="render-button" type="button">
-          Render TeX
-        </button>
+    <div class="grid">
+      <div class="form-group cs1 ce12">
+	<label for="texinput">Enter LaTex String</label>
+        <textarea id="texinput" class="textarea"
+		  rows="4" spellcheck="false">\int_0^1 \frac12 x^2\, dx</textarea>
       </div>
       
-      <div class="cs1 ce12 centered">
-	<h3>Drag output to board</h3>
-        <div class="miro-draggable" id="texoutput">
+      <div class="form-group cs1 ce12">
+	<label for="texoutput">Drag output to board</label>
+        <div class="miro-draggable centered" id="texoutput">
 	  \[f(x)=\frac12\sin(x^3)\]
 	</div>
       </div>
-      <div class="cs1 ce6 centered">
-	<button class="button button-small button-primary centered"
-		type="button"
-		id="test-button">
-	  Test Button
-	</button>
-      </div>
-      <div class="cs7 ce12 centered">
-	<button class="button button-primary button-small centered"
-		type="button"
-		id="test2-button">
-	  Test2 button
-	</button>
-      </div>
     </div>
-    <script type="module" src="/src/app.js"></script>
+    <script src="/src/app.js"></script>
   </body>
 </html>
