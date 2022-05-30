@@ -55,11 +55,11 @@ app.use(morgan( production ? 'common' : 'dev'));
 //this handles the backend authorization token
 //it finishes by redirecting to a page that double
 //checks the user and then closes the modal.
-app.use('/auth/redirect',
-	passport.authenticate('oauth2', {session: false}),
-	(req,res,next) => res.redirect('http://localhost:3000/success.html'));
-
 app.use('/auth', passport.authenticate('oauth2', {session: false}));
+app.use('/auth/redirect',
+	(req,res,next) => res.redirect('/success.html'));
+
+
 
 //this blocks anything not coming from the frontend client
 //client will respond to 401 by trying to reauthorize
