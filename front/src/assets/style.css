@@ -19,21 +19,27 @@ body {
   height: 100%;
   line-height: 1.5;
   margin: 0;
-  padding: 2rem;
-}
-
-.container {
-  max-width: 580px;
-  margin: 0 auto;
-  background-color: var(--indigo50);
-  padding: var(--space-xxxlarge);
-  border-radius: var(--border-radius-xlarge);
-}
-
-img {
-  max-width: 100%;
+  padding: 1rem 1.5rem;
 }
 
 .button {
   text-decoration: none;
+}
+
+.sr-only {
+  position: absolute;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }

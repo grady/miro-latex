@@ -7,27 +7,28 @@
     <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
     <script>
       MathJax = {loader: {load:['ui/safe']},
-		 startup: {},
+		 startup: {typeset:false},
 		 options: {enableMenu: false}
 		};
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
   </head>
   <body>
-    <div class="grid">
+    <div class="container">
       <div class="form-group cs1 ce12">
-	<label for="texinput">Enter LaTex String</label>
+	<label for="texinput">Enter LaTeX String</label>
         <textarea id="texinput" class="textarea"
 		  rows="4" spellcheck="false">\int_0^1 \frac12 x^2\, dx</textarea>
-      </div>
-      
-      <div class="form-group cs1 ce12">
-	<label for="texoutput">Drag output to board</label>
-        <div class="miro-draggable centered" id="texoutput">
+	<button type="button" id="place-button"
+		class="button button-small button-primary">
+	  Place at center, or drag image to board
+	</button>
+        <div class="miro-draggable" id="texoutput">
 	  \[f(x)=\frac12\sin(x^3)\]
 	</div>
       </div>
+      <div>Powered by MathJax</div>
     </div>
-    <script src="/src/app.js"></script>
+    <script type="module" src="/src/app.js"></script>
   </body>
 </html>

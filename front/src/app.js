@@ -6,77 +6,86 @@ function debounce(func, timeout=250){
   };
 }
 
+// render latex to svg
 async function convert() {
   let input = document.getElementById("texinput").value.trim();
-  //let button = document.getElementById("render-button");
   let output = document.getElementById("texoutput");
   
-  // button.disabled=true;
-  // button.classList.add('button-loading');
-  output.innerHTML='';
+  output.textContent='';
 
   try {
     let svg = await MathJax.tex2svgPromise(input);
     output.appendChild(svg);
     MathJax.startup.document.clear();
     MathJax.startup.document.updateDocument();
-    //console.log(MathJax.svgStylesheet());
   }
   catch(err){
     output
       .appendChild(document.createElement('pre'))
       .appendChild(document.createTextNode(err.message));
   }
-  finally {
-  //   button.disabled=false;
-  //   button.classList.remove('button-loading');
-  }  
-  
 }
 
-// drop event handler
-async function postSVG({x, y, target}){
-  let [boardInfo, token] = await Promise.all([
+async function init(){
+  convert();
+  
+  let texinput = document.getElementById('texinput');
+  texinput.oninput = debounce(convert, 500);
+  texinput.select(); 
+  texinput.focus();
+  
+  document.getElementById('place-button').onclick = buttonHandler;
+      
+  let [boardInfo, token, _] = await Promise.all([
     miro.board.getInfo(),
-    miro.board.getIdToken()
+    miro.board.getIdToken(),
+    miro.board.ui.on('drop', postSVG)
   ]);
-  let image = target.getElementsByTagName("svg").item(0);
-  image.setAttribute('width', image.scrollWidth);
-  image.setAttribute('height', image.scrollHeight);
-  //console.log(image);
+ 
+  // drop event handler
+  function postSVG({x, y, target}){
+    let button = document.getElementById('place-button');
+    let image = target.getElementsByTagName("svg").item(0);
+    button.disabled=true;
+    button.classList.add('button-loading');
+    //change size attributes from ex to pixels (for Miro)
+    image.setAttribute('width', image.scrollWidth);
+    image.setAttribute('height', image.scrollHeight);
+    //prepare form data
+    let imageBlob = new Blob([image.outerHTML],
+			     {type: 'image/svg+xml'});
+    let dataBlob = new Blob([JSON.stringify({position: {x, y}})],
+			    {type:'application/json'});
+    let fd = new FormData();
+    fd.append('data', dataBlob);
+    fd.append('resource', imageBlob, 'latex.svg');
+    //POST. If 401 try to authorize in modal
+    fetch(`/${boardInfo.id}/images`, {
+      method: 'POST',
+      headers: {Authorization: `Bearer ${token}`},
+      body: fd
+    }).then(response => {
+      switch(response.status){
+      case 401:  //unauthorized
+	miro.board.ui.openModal({url:'/auth'});
+	break;
+      default:
+      }
+      button.disabled=false;
+      button.classList.remove('button-loading');
+    });
+  }
 
-  let fd = new FormData();
-  let imageBlob = new Blob([image.outerHTML],
-			   {type: 'image/svg+xml'});
-  let dataBlob = new Blob([JSON.stringify({
-    position: {x, y}
-    // geometry: {width: image.scrollWidth}
-  })],
-			  {type:'application/json'});
-  
-  fd.append('data', dataBlob);
-  fd.append('resource', imageBlob, 'latex.svg');
-
-  fetch(`http://localhost:3001/${boardInfo.id}/images`, {
-    method: 'POST',
-    headers: {Authorization: `Bearer ${token}`},
-    body: fd
-  }).then(response => {
-    console.log('foo');
-    switch(response.status){
-    case 401: 
-      miro.board.ui.openModal({url:'http://localhost:3001/auth'});
-      break;
-    default:
-    }
-  });
+  async function buttonHandler(){
+    const vp = await miro.board.viewport.get();
+    postSVG({
+      x: vp.x + vp.width / 2,
+      y: vp.y + vp.height / 2,
+      target: document.getElementById('texoutput')
+    });
+  }
 }
 
+window.addEventListener('load', init);
 
-function init(){
-  miro.board.ui.on('drop', postSVG);
-  document.getElementById("texinput").oninput = debounce(convert, 500);
-}
-
-init();
 
