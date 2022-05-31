@@ -66,8 +66,10 @@ async function init(){
       body: fd
     }).then(response => {
       switch(response.status){
-      case 401:  //unauthorized
-	miro.board.ui.openModal({url:'/auth'});
+      case 401:  //unauthorized, open modal to get it
+	let query = response.headers.has('x-team-id') ?
+	  '?team_id='+response.headers.get('x-team-id') : '';
+	miro.board.ui.openModal({url:'/auth' + query});
 	break;
       default:
       }
