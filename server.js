@@ -67,7 +67,7 @@ const MiroStrategy = new OAuth2Strategy(
     if(params.expires_in > 0) {
       pipeline.expire(params.team_id, params.expires_in - 10);
     }
-    if(params.refresh_token){
+    if(ref){
       pipeline.set('{refresh}'+params.team_id, ref,
 		   'ex', 60*60*24*60-30 /* 60 days */);
     }
