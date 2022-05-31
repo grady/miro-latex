@@ -128,7 +128,7 @@ app.post('/api/:id/images',
 
 if(production) {
   // serve the build output in production
-  app.get(express.static('dist'));
+  app.use(express.static('dist'));
 } else { 
   // proxy the vite server in dev
   app.use(createProxyMiddleware({target:'http://localhost:3000/'}));  
