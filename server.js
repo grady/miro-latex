@@ -22,15 +22,19 @@ passport.use(new JWTStrategy({
 }, (payload, done) =>{//verify payload
   //try to get access token
   redisClient.get(payload.team, (err, access) => {
+    console.log('get access' + access);
     if(access){
       done(err, access);
     } else {//try to get refresh token
       redisClient.get('{refresh}'+payload.team, (err, ref) => {
+	console.log('get refresh' + ref);
 	if(!ref){//unauthorized
 	  done(null, false);
 	} else {//try to use refresh token
 	  refresh.requestNewAccessToken(
 	    'oauth2', ref, (err, accTok, refTok, result) => {
+	      console.log('requestnewaccess');
+	      console.log(result);
 	      //save new token pair to redis
 	      redisClient.pipeline()
 		.set(result.team_id, accTok,
@@ -57,8 +61,10 @@ const MiroStrategy = new OAuth2Strategy(
     clientSecret: process.env.MIRO_SECRET,
     callbackURL: process.env.CALLBACK_URL
   }, (acc, ref, params, prof, done) => { // verify
-    const pipeline = redisClient.pipeline().set(params.team_id, acc);
-    if(params.expires_in) {
+    console.log(params);
+    const pipeline = redisClient.pipeline()
+	  .set(params.team_id, acc);
+    if(params.expires_in > 0) {
       pipeline.expire(params.team_id, params.expires_in - 10);
     }
     if(params.refresh_token){
