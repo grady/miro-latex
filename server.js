@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const passport = require('passport');
 const {Strategy: JWTStrategy, ExtractJwt} = require('passport-jwt');
 const OAuth2Strategy = require('passport-oauth2');
-const axios = require('axios');
+const refresh = require('passport-oauth2-refresh');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const Redis = require('ioredis');
 
@@ -19,34 +19,58 @@ passport.use(new JWTStrategy({
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.MIRO_SECRET,
   issuer: 'miro'
-}, (payload, done) =>{
-  redisClient.hget(payload.team, 'access', done);
+}, (payload, done) =>{//verify payload
+  //try to get access token
+  redisClient.get(payload.team, (err, access) => {
+    if(access){
+      done(err, access);
+    } else {//try to get refresh token
+      redisClient.get('{refresh}'+payload.team, (err, ref) => {
+	if(!ref){//unauthorized
+	  done(null, false);
+	} else {//try to use refresh token
+	  refresh.requestNewAccessToken(
+	    'oauth2', ref, (err, accTok, refTok, result) => {
+	      //save new token pair to redis
+	      redisClient.pipeline()
+		.set(result.team_id, accTok,
+		     'ex', result.expires_in - 10)
+		.set('{refresh}'+result.team_id, refTok,
+		     'ex', 60*60*24*60-30 /*60 days*/)
+		.exec();
+	      done(err, accTok);
+	    });
+	} 
+      });
+    }
+  });
 }));
 
+    
 // The strategy for handling the oauth2 authorization handshake.
-// Once we have the token, use it to call the miro API and lookup
-// the team id. Store the pair in the database for JWT strategy to use
-passport.use(new OAuth2Strategy(
+// Store the token (pair?) in redis for JWT strategy to use
+const MiroStrategy = new OAuth2Strategy(
   { // strategy options from environment
     authorizationURL: process.env.AUTH_URL,
     tokenURL: process.env.TOKEN_URL,
     clientID: process.env.MIRO_ID,
     clientSecret: process.env.MIRO_SECRET,
     callbackURL: process.env.CALLBACK_URL
-  }, (acc, ref, prof, done) => { // verify
-    //query the miro api for token info
-    axios('https://api.miro.com/v1/oauth-token', {
-      headers: {Authorization: "Bearer " + acc}
-    }).then(// store team.id = {access: token}
-      result => {
-	redisClient.hmset(result.data.team.id,
-			  {access: acc},
-			  (err,ok) => {done(err, err?false:acc)});
-      },
-      done) //axios promise reject (timeout?)
-      .catch(done); //axios error (non 2xx codes, etc.)
-  }));
+  }, (acc, ref, params, prof, done) => { // verify
+    const pipeline = redisClient.pipeline().set(params.team_id, acc);
+    if(params.expires_in) {
+      pipeline.expire(params.team_id, params.expires_in - 10);
+    }
+    if(params.refresh_token){
+      pipeline.set('{refresh}'+params.team_id, ref,
+		   'ex', 60*60*24*60-30 /* 60 days */);
+    }
+    pipeline.exec()
+    done(null, acc);
+  });
 
+passport.use(MiroStrategy);
+refresh.use(MiroStrategy);
 
 const app = express();
 

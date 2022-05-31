@@ -13,7 +13,8 @@
   },
   "nodemonConfig": {
     "ignore": [
-      "front/*", "dist/*"
+      "front/*",
+      "dist/*"
     ],
     "watch": [
       ".",
@@ -29,7 +30,6 @@
     "vite": "^2.9.9"
   },
   "dependencies": {
-    "axios": "^0.27.2",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "http-proxy-middleware": "^2.0.6",
@@ -37,7 +37,8 @@
     "morgan": "^1.10.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
-    "passport-oauth2": "^1.6.1"
+    "passport-oauth2": "^1.6.1",
+    "passport-oauth2-refresh": "^2.1.0"
   },
   "engines": {
     "node": "16.x"
