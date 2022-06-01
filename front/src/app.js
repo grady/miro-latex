@@ -46,6 +46,8 @@ async function init(){
   function postSVG({x, y, target}){
     let button = document.getElementById('place-button');
     let image = target.getElementsByTagName("svg").item(0);
+    if(!image) return;
+    
     button.disabled=true;
     button.classList.add('button-loading');
     //change size attributes from ex to pixels (for Miro)

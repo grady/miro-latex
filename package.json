@@ -25,12 +25,12 @@
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^7.2.1",
+    "dotenv": "^16.0.1",
     "mirotone": "^2.0.9",
     "nodemon": "^2.0.16",
     "vite": "^2.9.9"
   },
   "dependencies": {
-    "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "http-proxy-middleware": "^2.0.6",
     "ioredis": "^5.0.5",

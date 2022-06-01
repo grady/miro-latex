@@ -119,7 +119,6 @@ app.post('/api/:id/images',
 	   changeOrigin: true,
 	   pathRewrite: {'^/api': ''},
 	   onProxyReq: (proxyReq, req, res) => {
-	     console.log('proxy request');
 	     proxyReq.setHeader('Authorization',
 	      			"Bearer " + req.user.acc);
 	   }
