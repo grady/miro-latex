@@ -69,6 +69,11 @@ async function init() {
   convert();
 
   let texinput = document.getElementById('texinput');
+  let mathlive = document.getElementById('mathlive');
+  mathlive.oninput = debounce(function(){
+    texinput.value = mathlive.value;
+    convert();
+  }, 500);
   texinput.oninput = debounce(convert, 500);
   texinput.select(); 
   texinput.focus();

@@ -12,10 +12,12 @@
 		};
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+    <script defer src="https://unpkg.com/mathlive"></script>
   </head>
   <body>
     <div class="container">
       <div class="form-group cs1 ce12">
+	<math-field id="mathlive"></math-field>
 	<label for="texinput">Enter LaTeX String</label>
         <textarea id="texinput" class="textarea"
 		  rows="4" spellcheck="false">\int_0^1 \frac12 x^2\, dx</textarea>
