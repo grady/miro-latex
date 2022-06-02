@@ -1,9 +1,10 @@
 const express = require('express');
 const Redis = require('ioredis');
 const morgan = require('morgan');
+const {nanoid} = require('nanoid/non-secure');
 const passport = require('passport');
 const {Strategy: JWTStrategy, ExtractJwt} = require('passport-jwt');
-const {v4: uuid4} = require('uuid');
+
 
 const production = process.env.NODE_ENV === 'production';
 
@@ -11,50 +12,49 @@ const MiroJwtStrategy = new JWTStrategy({
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.MIRO_SECRET,
   issuer: 'miro'
-}, (payload, done) => {done(null, payload)});
+}, (payload, done) => {done(null, true)});
 
 passport.use('miro-jwt', MiroJwtStrategy);
 
-const app = express();
-const redisClient = new Redis(process.env.UPSTASH_REDIS_URL);
+const redisClient = new Redis(process.env.UPSTASH_REDIS_URL,
+			      {lazyConnect:true});
 
+const app = express();
 app.use(morgan( production ? 'short' : 'dev'));
 
-
-app.get('/img/:id', (req, res, next) => {
-  redisClient.get(req.params.id, (err, svg)=>{
-    if(svg) {
-      return res.set('Content-Type', 'image/svg+xml').send(svg);
-    } else {
-      return res.sendStatus(404); //not found
-    }
-  });
+app.get('/img/:id', async (req,res,next) => {
+  const query = await redisClient.multi()
+	.get(req.params.id)
+	.del(req.params.id)
+	.exec().catch(console.log);
+  // query hit => send result
+  if(query && query[0]) 
+    return res.set('Content-Type', 'image/svg+xml').send(query[0]);
+  // query miss => not found
+  if (query) return res.sendStatus(404);
+  // hopefully we never get here => server error
+  return res.sendStatus(500);
 });
 
 app.post('/img',
 	 // block any request without a frontend token
 	 passport.authorize('miro-jwt', {session: false}),
-	 // parse the body to string
+	 // parse body
 	 express.text({type: 'image/svg+xml', limit: 2**18 /*256kb*/}),
-	 (req,res,next) => {
-	   //console.log(req.body);
-	   if (!req.body) {
-	     res.sendStatus(400); //bad request
-	   }
-	   let id = uuid4();
-	   redisClient.set(id, req.body, 'ex', 120, (err,ok) => {
-	     if (err) {
-	       console.log(err);
-	       return res.sendStatus(500); //server error
-	     } else {
-	       console.log(id);
-	       res.status(201).send({id}); //created
-	     }
-	   });
-	   
+	 // handle request
+	 async (req, res, next) => {
+	   if(!req.body) // empty body => bad request
+	     return res.status(400).send({msg:'Request body empty'});
+	   // a random identifier
+	   const id = nanoid();
+	   // try to put body in redis: OK => created
+	   if ( await redisClient.set(id, req.body, 'ex', 10).catch(console.log) ) 
+	     return res.status(201).send({id}); 
+	   // hopefully we never get here => server error
+	   return res.sendStatus(500); 
 	 });
 
-
+// routes to serve frontend
 if(production) {
   // serve the build output in production
   app.use(express.static('dist'));
@@ -65,9 +65,12 @@ if(production) {
 }
 
 //start the server
-const server = require('http')
-      .createServer(app)
-      .listen(
-	process.env.PORT || 3001,
-	() => console.log(`Backend listening on ${server.address().port}`)
-      );
+redisClient.connect().then( () => {
+  console.log('Redis connected');
+  const server = app.listen(
+    process.env.PORT || 3001,
+    () => console.log(`Backend listening on ${server.address().port}`)
+  );
+});
+
+
