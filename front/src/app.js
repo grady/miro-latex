@@ -70,7 +70,7 @@ async function init() {
   let mathlive = document.getElementById('mathlive');
 
   mathlive.value = texinput.value;
-  convert(texinput.value || '\\int_0^1 \\frac12 x^2\\, dx');
+  convert(texinput.value || texinput.placeholder);
 
   mathlive.addEventListener('input', debounce((evt) => {
     texinput.value = mathlive.getValue('latex-expanded');
