@@ -12,7 +12,6 @@ module.exports = defineConfig({
       input: {
 	index: resolve(__dirname, root, 'index.html'),
 	app: resolve(__dirname, root, 'app.html'),
-	success: resolve(__dirname, root, 'success.html')
       }
     }
   }

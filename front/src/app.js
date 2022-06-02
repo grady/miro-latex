@@ -82,22 +82,15 @@ async function init() {
     convert();
   }, 500));
   
-  //texinput.select(); 
-  //texinput.focus();
-
   document.getElementById('mathlive-toggle').onchange = function({target}){
     function display(isTrue) {return isTrue ? 'block' : 'none';}
-
     texinput.parentElement.style.display = display(!target.checked);
     mathlive.parentElement.style.display = display(target.checked);
-    console.log(target.checked);
   };
   
   document.getElementById('place-button').onclick = buttonHandler;
 
-  console.log('attaching drop event listener');
   await miro.board.ui.on('drop', postSVG);
-  console.log('drop event listener attached');
 }
 
 window.addEventListener('load', init);
