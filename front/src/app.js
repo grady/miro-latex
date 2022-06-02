@@ -18,27 +18,23 @@ async function postSVG({x, y, target}){
 
   image.setAttribute('width', image.scrollWidth);
   image.setAttribute('height', image.scrollHeight);
-  
-  fetch('/img', {
-    method: 'POST',
-    headers: {
-      Authorization: 'Bearer ' + token,
-      'Content-Type': 'image/svg+xml'
-    },
-    body: image.outerHTML
-  }).then(response => {
-    let {id} = response.json();
-    //console.log(id)
-    let url = URL('/img/'+id, APP_BASE_URL);
-    console.log(url);
-    let board_image = await miro.board.createImage({
-      url: URL('/img/'+id, APP_BASE_URL),
-      position: {x, y}
+  try { 
+    let response = await fetch('/img', {
+      method: 'POST',
+      headers: {
+	Authorization: 'Bearer ' + token,
+	'Content-Type': 'image/svg+xml'
+      },
+      body: image.outerHTML
     });
-    console.log(board_image);
-    button.disabled=false;
-    button.classList.remove('button-loading');
-  });
+    let {id} = await response.json();
+    let url = document.location.origin + '/img/' + id;
+    let board_image = await miro.board.createImage({url, x, y});
+  } catch (err) {
+    //console.log(err);
+  }
+  button.disabled=false;
+  button.classList.remove('button-loading');
 }
 
 async function convert() {
@@ -64,7 +60,7 @@ async function buttonHandler(){
   const vp = await miro.board.viewport.get();
   postSVG({
     x: vp.x + vp.width / 2,
-    y: vp.y + vp.height / 2
+    y: vp.y + vp.height / 2,
     target: document.getElementById('texoutput')
   });
 }
