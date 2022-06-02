@@ -20,20 +20,17 @@ const redisClient = new Redis(process.env.UPSTASH_REDIS_URL,
 			      {lazyConnect:true});
 
 const app = express();
+
+// logging 
 app.use(morgan( production ? 'short' : 'dev'));
 
+// main routes for image handling
 app.get('/img/:id', async (req,res,next) => {
-  const query = await redisClient.multi()
-	.get(req.params.id)
-	.exec().catch(console.log);
-  console.log(query);
-  // query hit => send result
-  if(query && query[0]) 
-    return res.set('Content-Type', 'image/svg+xml').send(query[0]);
+  const query = await redisClient.get(req.params.id).catch(console.log);
+  // query hit => return image
+  if(query) return res.set('Content-Type', 'image/svg+xml').send(query);
   // query miss => not found
-  if (query) return res.sendStatus(404);
-  // hopefully we never get here => server error
-  return res.sendStatus(500);
+  return res.sendStatus(404);
 });
 
 app.post('/img',
