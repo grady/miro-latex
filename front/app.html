@@ -16,20 +16,41 @@
   </head>
   <body>
     <div class="container">
-      <div class="form-group cs1 ce12">
-	<math-field id="mathlive"></math-field>
-	<label for="texinput">Enter LaTeX String</label>
-        <textarea id="texinput" class="textarea"
-		  rows="4" spellcheck="false">\int_0^1 \frac12 x^2\, dx</textarea>
-	<button type="button" id="place-button"
-		class="button button-small button-primary">
-	  Place at center, or drag image to board
-	</button>
+      <div>
+	<div class="form-group">
+	  <div>
+	    <label for="mathlive">MathLive Editor</label>
+	    <math-field id="mathlive" default-mode="math"></math-field>
+	  </div>
+	  <div class="hidden">
+	    <label for="texinput">Enter LaTeX</label>
+            <textarea id="texinput" class="textarea"
+		      spellcheck="false"
+		      placeholder="\int_0^1 \frac12 x^2\, dx"></textarea>
+	  </div>
+	  <button type="button" id="place-button"
+		  class="button button-small button-primary">
+	    Place At Center
+	  </button>
+	  Or drag and drop image below to canvas.
+	</div>
         <div class="miro-draggable" id="texoutput">
 	  \[f(x)=\frac12\sin(x^3)\]
 	</div>
       </div>
-      <div class="p-small">Powered by MathJax</div>
+      <div class="grid p-medium">
+	<div class="cs1 ce6">
+	  <label class="toggle" id="mathlive-toggle">
+	    LaTeX
+	    <input type="checkbox" tabindex="0" checked/>
+	    <span></span>MathLive
+	  </label>
+	</div>
+	<div class="cs7 ce12 align-right">
+	  Powered by MathJax
+
+	</div>
+      </div>
     </div>
     <script type="module" src="/src/app.js"></script>
   </body>

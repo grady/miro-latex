@@ -37,8 +37,8 @@ async function postSVG({x, y, target}){
   button.classList.remove('button-loading');
 }
 
-async function convert() {
-  let input = document.getElementById("texinput").value.trim();
+async function convert(value) {
+  let input = value || document.getElementById("texinput").value.trim();
   let output = document.getElementById("texoutput");
   
   output.textContent='';
@@ -66,18 +66,33 @@ async function buttonHandler(){
 }
 
 async function init() {
-  convert();
-
   let texinput = document.getElementById('texinput');
   let mathlive = document.getElementById('mathlive');
-  mathlive.oninput = debounce(function(){
-    texinput.value = mathlive.value;
-    convert();
-  }, 500);
-  texinput.oninput = debounce(convert, 500);
-  texinput.select(); 
-  texinput.focus();
 
+  mathlive.value = texinput.value;
+  convert(texinput.value || '\\int_0^1 \\frac12 x^2\\, dx');
+
+  mathlive.addEventListener('input', debounce((evt) => {
+    texinput.value = mathlive.getValue('latex-expanded');
+    convert();
+  }, 500));
+
+  texinput.addEventListener('input', debounce(() => {
+    mathlive.setValue(texinput.value, {suppressChangeNotifications: true});
+    convert();
+  }, 500));
+  
+  //texinput.select(); 
+  //texinput.focus();
+
+  document.getElementById('mathlive-toggle').onchange = function({target}){
+    function display(isTrue) {return isTrue ? 'block' : 'none';}
+
+    texinput.parentElement.style.display = display(!target.checked);
+    mathlive.parentElement.style.display = display(target.checked);
+    console.log(target.checked);
+  };
+  
   document.getElementById('place-button').onclick = buttonHandler;
 
   console.log('attaching drop event listener');

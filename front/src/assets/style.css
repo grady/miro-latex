@@ -43,3 +43,30 @@ body {
     flex-direction: column;
     justify-content: space-between;
 }
+#mathlive-toggle {
+    margin:0;
+}
+.align-right {
+    text-align: right;
+    color: var(--indigo500);
+}
+.hidden {
+    display: none;
+}
+math-field, textarea {
+    min-height: 7em;
+}
+math-field {
+    border: 1px solid;
+    border-radius: var(--border-radius-medium);
+    border-color: var(--indigo400);
+    padding: 12px var(--space-small) 12px;
+}
+math-field:focus-within{
+    border-color: var(--blue600);
+    box-shadow:0 0 0 var(--border-radius-medium) var(--blue400);
+    outline: none;
+}
+#mathlive-toggle span{
+    margin-left: 12px;
+}
