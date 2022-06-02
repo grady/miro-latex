@@ -26,6 +26,7 @@ app.get('/img/:id', async (req,res,next) => {
   const query = await redisClient.multi()
 	.get(req.params.id)
 	.exec().catch(console.log);
+  console.log(query);
   // query hit => send result
   if(query && query[0]) 
     return res.set('Content-Type', 'image/svg+xml').send(query[0]);
