@@ -41,5 +41,11 @@
   },
   "engines": {
     "node": "16.x"
+  },
+  "eslintConfig": {
+    "extends" : ["eslint:recommended"],
+    "env" : {"node" : true},
+    "parserOptions" : { "ecmaVersion": "2018"},
+    "ignorePatterns" : ["dist/*"]
   }
 }

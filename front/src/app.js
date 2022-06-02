@@ -8,7 +8,7 @@ function debounce(func, timeout=250){
 
 async function postSVG({x, y, target}){
   let button = document.getElementById('place-button');
-  let image = target.getElementsByTagName("svg").item(0);
+  let image = target.getElementsByTagName('svg').item(0);
   if(!image) return;
 
   let token = await miro.board.getIdToken();
@@ -29,7 +29,7 @@ async function postSVG({x, y, target}){
     });
     let {id} = await response.json();
     let url = document.location.origin + '/img/' + id;
-    let board_image = await miro.board.createImage({url, x, y});
+    await miro.board.createImage({url, x, y});
   } catch (err) {
     //console.log(err);
   }
@@ -38,8 +38,8 @@ async function postSVG({x, y, target}){
 }
 
 async function convert(value) {
-  let input = value || document.getElementById("texinput").value.trim();
-  let output = document.getElementById("texoutput");
+  let input = value || document.getElementById('texinput').value.trim();
+  let output = document.getElementById('texoutput');
   
   output.textContent='';
 
@@ -72,7 +72,7 @@ async function init() {
   mathlive.value = texinput.value;
   convert(texinput.value || texinput.placeholder);
 
-  mathlive.addEventListener('input', debounce((evt) => {
+  mathlive.addEventListener('input', debounce(() => {
     texinput.value = mathlive.getValue('latex-expanded');
     convert();
   }, 500));
