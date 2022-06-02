@@ -25,7 +25,6 @@ app.use(morgan( production ? 'short' : 'dev'));
 app.get('/img/:id', async (req,res,next) => {
   const query = await redisClient.multi()
 	.get(req.params.id)
-	.del(req.params.id)
 	.exec().catch(console.log);
   // query hit => send result
   if(query && query[0]) 
