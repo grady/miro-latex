@@ -19,8 +19,16 @@
       <div>
 	<div class="form-group">
 	  <div class="hidden">
-	    <label for="mathlive">MathLive Editor</label>
-	    <math-field id="mathlive" default-mode="math"></math-field>
+	    <div class="grid">
+	      <label class="cs1 ce6" for="mathlive">MathLive Editor</label>
+	      <label class="cs7 ce12 toggle align-right" for="virtkbd">
+		<input type="checkbox" id="virtkbd" name="virtkbd" tabindex="0"/>
+		<span></span> Keyboard
+	      </label>
+	      </div>
+	    <math-field name="mathlive" id="mathlive"
+			virtual-keyboards="functions symbols greek"
+			virtual-keyobard-theme="material"></math-field>
 	  </div>
 	  <div>
 	    <label for="texinput">Enter LaTeX</label>
@@ -41,13 +49,14 @@
       <footer>
       <div class="grid p-medium">
 	<div class="cs1 ce6">
-	  <label class="toggle" >
+	  <label class="toggle">
 	    LaTeX
-	    <input type="checkbox" id="mathlive-toggle" tabindex="0"/>
+	    <input type="checkbox" id="mathlive-toggle"
+		   name="mathlive-toggle" tabindex="0"/>
 	    <span></span>MathLive
 	  </label>
 	</div>
-	<div class="cs7 ce12 powered-by">
+	<div class="cs7 ce12 powered-by align-right">
 	  Powered by MathJax
 	</div>
       </div>

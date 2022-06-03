@@ -75,8 +75,6 @@ async function init() {
     function display(isTrue) {return isTrue ? 'block' : 'none';}
     texinput.parentElement.style.display = display(!target.checked);
     mathlive.parentElement.style.display = display(target.checked);
-    window.localStorage.setItem('mathlive',
-				JSON.stringify(target.checked || false));
   }
   
   mathlive.value = texinput.value;
@@ -92,12 +90,13 @@ async function init() {
     convert();
   }, 500));
 
-  let mathliveToggle = document.getElementById('mathlive-toggle');
+  setupCheckbox(document.getElementById('mathlive-toggle'),
+		'mathlive', mathliveToggleHandler);
   
-  mathliveToggle.addEventListener('change', mathliveToggleHandler);
-  mathliveToggle.checked =
-    JSON.parse(window.localStorage.getItem('mathlive'));
-  mathliveToggleHandler({target: mathliveToggle});
+  setupCheckbox(document.getElementById('virtkbd'),
+		'virtkbd', ({target})=>{
+		  mathlive.virtualKeyboardMode = target.checked ? 'onfocus' : 'off';
+		});
   
   document.getElementById('place-button').onclick = buttonHandler;
 
@@ -105,6 +104,17 @@ async function init() {
 			      JSON.stringify(window.location.pathname));
   
   await miro.board.ui.on('drop', postSVG);
+}
+
+// persistent checkbox state using localStorage
+function setupCheckbox(element, storageName, handler, callHandler=true){
+  element.addEventListener('change', (evt) => {
+    window.localStorage.setItem(
+      storageName, JSON.stringify(evt.target.checked || false));
+    handler(evt);
+  });
+  element.checked = !!JSON.parse(window.localStorage.getItem(storageName)) || false;
+  if(callHandler) handler({target: element});
 }
 
 window.addEventListener('visibilitychange', () => {

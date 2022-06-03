@@ -43,8 +43,10 @@ body {
     flex-direction: column;
     justify-content: space-between;
 }
-.powered-by {
+.align-right {
     text-align: right;
+}
+.powered-by {
     color: var(--indigo500);
 }
 .hidden {
@@ -67,6 +69,7 @@ math-field:focus-within{
 footer .toggle {
     margin:0;
 }
-#mathlive-toggle ~ span{
+.toggle  span{
     margin-left: 12px;
+    vertical-align: middle;
 }
