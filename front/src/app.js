@@ -101,7 +101,19 @@ async function init() {
   
   document.getElementById('place-button').onclick = buttonHandler;
 
+  window.localStorage.setItem('panel-open',
+			      JSON.stringify(window.location.pathname));
+  
   await miro.board.ui.on('drop', postSVG);
 }
+
+window.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'hidden')
+    window.localStorage.removeItem('panel-open');
+  else
+    window.localStorage
+    .setItem('panel-open', JSON.stringify(window.location.pathname));
+});
+
 
 window.addEventListener('load', init);
