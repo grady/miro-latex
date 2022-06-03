@@ -65,10 +65,19 @@ async function buttonHandler(){
   });
 }
 
+
+
 async function init() {
   let texinput = document.getElementById('texinput');
   let mathlive = document.getElementById('mathlive');
 
+  function mathliveToggleHandler({target}){
+    function display(isTrue) {return isTrue ? 'block' : 'none';}
+    texinput.parentElement.style.display = display(!target.checked);
+    mathlive.parentElement.style.display = display(target.checked);
+    window.localStorage.setItem('mathlive', JSON.stringify(target.checked));
+  }
+  
   mathlive.value = texinput.value;
   convert(texinput.value || texinput.placeholder);
 
@@ -81,12 +90,15 @@ async function init() {
     mathlive.setValue(texinput.value, {suppressChangeNotifications: true});
     convert();
   }, 500));
+
+  let mathliveToggle = document
+      .getElementById('mathlive-toggle')
+      . getElementsByTagName('input')[0]; //hacktastic;
   
-  document.getElementById('mathlive-toggle').onchange = function({target}){
-    function display(isTrue) {return isTrue ? 'block' : 'none';}
-    texinput.parentElement.style.display = display(!target.checked);
-    mathlive.parentElement.style.display = display(target.checked);
-  };
+  mathliveToggle.addEventListener('change', mathliveToggleHandler);
+  mathliveToggle.checked =
+    JSON.parse(window.localStorage.getItem('mathlive'));
+  mathliveToggleHandler({target: mathliveToggle});
   
   document.getElementById('place-button').onclick = buttonHandler;
 
