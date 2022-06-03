@@ -20,6 +20,7 @@ body {
   line-height: 1.5;
   margin: 0;
   padding: var(--space-medium);
+  padding-top: 0;
 }
 
 .button {
@@ -42,6 +43,9 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+.container :first-child{
+    flex-grow:2;
 }
 .align-right {
     text-align: right;
