@@ -19,7 +19,7 @@ body {
   height: 100%;
   line-height: 1.5;
   margin: 0;
-  padding: 1rem 1.5rem;
+  padding: var(--space-medium);
 }
 
 .button {
@@ -52,6 +52,9 @@ body {
 .hidden {
     display: none;
 }
+#texoutput {
+    padding: var(--space-large) 0;
+}
 math-field, textarea {
     min-height: 7em;
 }
@@ -66,10 +69,13 @@ math-field:focus-within{
     box-shadow:0 0 0 var(--border-radius-medium) var(--blue400);
     outline: none;
 }
+mjx-container {
+    margin: 0 !important;
+}
 footer .toggle {
     margin:0;
 }
-.toggle  span{
+.toggle span{
     margin-left: 12px;
     vertical-align: middle;
 }
