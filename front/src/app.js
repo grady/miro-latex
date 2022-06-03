@@ -75,7 +75,8 @@ async function init() {
     function display(isTrue) {return isTrue ? 'block' : 'none';}
     texinput.parentElement.style.display = display(!target.checked);
     mathlive.parentElement.style.display = display(target.checked);
-    window.localStorage.setItem('mathlive', JSON.stringify(target.checked));
+    window.localStorage.setItem('mathlive',
+				JSON.stringify(target.checked || false));
   }
   
   mathlive.value = texinput.value;
@@ -92,7 +93,6 @@ async function init() {
   }, 500));
 
   let mathliveToggle = document.getElementById('mathlive-toggle');
-
   
   mathliveToggle.addEventListener('change', mathliveToggleHandler);
   mathliveToggle.checked =
