@@ -91,9 +91,8 @@ async function init() {
     convert();
   }, 500));
 
-  let mathliveToggle = document
-      .getElementById('mathlive-toggle')
-      . getElementsByTagName('input')[0]; //hacktastic;
+  let mathliveToggle = document.getElementById('mathlive-toggle');
+
   
   mathliveToggle.addEventListener('change', mathliveToggleHandler);
   mathliveToggle.checked =
