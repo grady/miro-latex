@@ -100,9 +100,6 @@ async function init() {
   
   document.getElementById('place-button').onclick = buttonHandler;
 
-  window.localStorage.setItem('panel-open',
-			      JSON.stringify(window.location.pathname));
-  
   await miro.board.ui.on('drop', postSVG);
 }
 
@@ -116,14 +113,5 @@ function setupCheckbox(element, storageName, handler, callHandler=true){
   element.checked = !!JSON.parse(window.localStorage.getItem(storageName)) || false;
   if(callHandler) handler({target: element});
 }
-
-window.addEventListener('visibilitychange', () => {
-  if(document.visibilityState === 'hidden')
-    window.localStorage.removeItem('panel-open');
-  else
-    window.localStorage
-    .setItem('panel-open', JSON.stringify(window.location.pathname));
-});
-
 
 window.addEventListener('load', init);
