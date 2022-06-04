@@ -29,6 +29,7 @@
     "http-proxy-middleware": "^2.0.6",
     "mirotone": "^2.0.9",
     "nodemon": "^2.0.16",
+    "uncss": "^0.17.3",
     "vite": "^2.9.9"
   },
   "dependencies": {
@@ -36,6 +37,7 @@
     "ioredis": "^5.0.5",
     "morgan": "^1.10.0",
     "nanoid": "^3.3.4",
+    "pako": "^2.0.4",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0"
   },
@@ -43,9 +45,17 @@
     "node": "16.x"
   },
   "eslintConfig": {
-    "extends" : ["eslint:recommended"],
-    "env" : {"node" : true},
-    "parserOptions" : { "ecmaVersion": "2018"},
-    "ignorePatterns" : ["dist/*"]
+    "extends": [
+      "eslint:recommended"
+    ],
+    "env": {
+      "node": true
+    },
+    "parserOptions": {
+      "ecmaVersion": "2018"
+    },
+    "ignorePatterns": [
+      "dist/*"
+    ]
   }
 }

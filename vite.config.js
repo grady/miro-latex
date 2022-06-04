@@ -14,5 +14,10 @@ module.exports = defineConfig({
 	app: resolve(__dirname, root, 'app.html'),
       }
     }
+  },
+  css: {
+    postcss: {
+      plugins : [ require('uncss').postcssPlugin({html:"front/*.html"})   ],
+    }
   }
 });

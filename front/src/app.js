@@ -1,3 +1,5 @@
+import {deflate} from 'pako';
+
 function debounce(func, timeout=250){
   let timer = undefined;
   return (...args) => {
@@ -8,27 +10,29 @@ function debounce(func, timeout=250){
 
 async function postSVG({x, y, target}){
   let button = document.getElementById('place-button');
-  let image = target.getElementsByTagName('svg').item(0);
+  let image = target.getElementsByTagName('svg')[0];
   if(!image) return;
 
-  let token = await miro.board.getIdToken();
-  
   button.disabled=true;
   button.classList.add('button-loading');
 
   image.setAttribute('width', image.scrollWidth);
   image.setAttribute('height', image.scrollHeight);
-  try { 
+
+  try {
+    let token = await miro.board.getIdToken();
     let response = await fetch('/img', {
       method: 'POST',
       headers: {
 	Authorization: 'Bearer ' + token,
-	'Content-Type': 'image/svg+xml'
+	'Content-Type': 'image/svg+xml',
+	'Content-Encoding': 'deflate'
       },
-      body: image.outerHTML
+      body: deflate(image.outerHTML)
     });
     let {id} = await response.json();
     let url = document.location.origin + '/img/' + id;
+    //console.log(url);
     await miro.board.createImage({url, x, y});
   } catch (err) {
     //console.log(err);

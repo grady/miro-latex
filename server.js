@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const {nanoid} = require('nanoid/non-secure');
 const passport = require('passport');
 const {Strategy: JWTStrategy, ExtractJwt} = require('passport-jwt');
-
+const getRawBody = require('raw-body');
 
 const production = process.env.NODE_ENV === 'production';
 
@@ -21,15 +21,17 @@ const redisClient = new Redis(process.env.UPSTASH_REDIS_URL,
                               {lazyConnect:true});
 
 const app = express();
+app.disable('x-powered-by');
 
 // logging
 app.use(morgan( production ? 'short' : 'dev'));
 
 // main routes for image handling
 app.get('/img/:id', async (req,res) => {
-  const query = await redisClient.get(req.params.id).catch(console.log);
+  const query = await redisClient.getBuffer(req.params.id).catch(console.log);
   // query hit => return image
-  if(query) return res.set('Content-Type', 'image/svg+xml').send(query);
+  if(query) return res.set({'Content-Type':'image/svg+xml',
+			    'Content-Encoding': 'deflate'}).send(query);
   // query miss => not found
   return res.sendStatus(404);
 });
@@ -37,17 +39,19 @@ app.get('/img/:id', async (req,res) => {
 app.post('/img',
          // block any request without a frontend token
          passport.authorize('miro-jwt', {session: false}),
-         // parse body
-         express.text({type: 'image/svg+xml', limit: 2**18 /*256kb*/}),
          // handle request
          async (req, res) => {
-           if(!req.body) // empty body => bad request
-             return res.status(400).send({msg:'Request body empty'});
+           if(!req.is('image/svg+xml') ||
+	      req.get('Content-Encoding') !== 'deflate'
+	     ) // bad request
+             return res.sendStatus(400);
+	   req.body = await getRawBody(req).catch(console.log);
            // a random identifier
            const id = nanoid();
            // try to put body in redis: OK => created
-           if ( await redisClient.set(id, req.body, 'ex', 10).catch(console.log) )
-             return res.status(201).send({id});
+           if (await redisClient.set(id, req.body, 'ex', 120).catch(console.log)){
+             return  res.status(201).send({id});
+	   }
            // hopefully we never get here => server error
            return res.sendStatus(500);
          });
