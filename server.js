@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const {nanoid} = require('nanoid/non-secure');
 const passport = require('passport');
 const {Strategy: JWTStrategy, ExtractJwt} = require('passport-jwt');
+const rateLimit = require('express-rate-limit');
 const getRawBody = require('raw-body');
 
 const production = process.env.NODE_ENV === 'production';
@@ -37,6 +38,11 @@ app.get('/img/:id', async (req,res) => {
 });
 
 app.post('/img',
+	 rateLimit({
+	   windowMs: 1000 * 60 * 15, // 15 minutes
+	   max: 10 * 15, // 10 images per minute per ip
+	   standardHeaders: true, legacyHeaders: false
+	 }),
          // block any request without a frontend token
          passport.authorize('miro-jwt', {session: false}),
          // handle request
