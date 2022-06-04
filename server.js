@@ -49,7 +49,7 @@ app.post('/img',
            // a random identifier
            const id = nanoid();
            // try to put body in redis: OK => created
-           if (await redisClient.set(id, req.body, 'ex', 120).catch(console.log)){
+           if (await redisClient.set(id, req.body, 'ex', 10).catch(console.log)){
              return  res.status(201).send({id});
 	   }
            // hopefully we never get here => server error
