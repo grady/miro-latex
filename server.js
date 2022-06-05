@@ -21,6 +21,8 @@ passport.use('miro-jwt', MiroJwtStrategy);
 const redisClient = new Redis(process.env.UPSTASH_REDIS_URL,
                               {lazyConnect:true});
 
+const TTL = parseInt(process.env.MAX_AGE) || 10;
+
 const app = express();
 app.disable('x-powered-by');
 
@@ -55,7 +57,7 @@ app.post('/img',
            // a random identifier
            const id = nanoid();
            // try to put body in redis: OK => created
-           if (await redisClient.set(id, req.body, 'ex', 10).catch(console.log)){
+           if (await redisClient.set(id, req.body, 'ex', TTL).catch(console.log)){
              return  res.status(201).send({id});
 	   }
            // hopefully we never get here => server error
