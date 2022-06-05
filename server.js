@@ -31,14 +31,26 @@ app.set('trust proxy', 'uniquelocal');
 app.use(morgan( production ? 'short' : 'dev'));
 
 // main routes for image handling
-app.get('/img/:id', async (req,res) => {
-  const query = await redisClient.getBuffer(req.params.id).catch(console.log);
-  // query hit => return image
-  if(query) return res.set({'Content-Type':'image/svg+xml',
-			    'Content-Encoding': 'deflate'}).send(query);
-  // query miss => not found
-  return res.sendStatus(404);
-});
+app.get('/img/:id',
+	rateLimit({ // throttling to db allowances
+	  windowMs: 1000 * 60 * 5,
+	  max: 400
+	}),
+	async (req,res) => {
+	  const query = await redisClient
+		.getBuffer(req.params.id)
+		.catch(console.log);
+	  // query hit => return image
+	  if(query) {
+	    return res.set({
+	      'Content-Type':'image/svg+xml',
+	      'Content-Encoding': 'deflate',
+	      'Cache-Control': 'public, immutable, max-age='+TTL
+	    }).send(query);
+	  }
+	  // query miss => not found
+	  return res.sendStatus(404);
+	});
 
 app.post('/img',
 	 rateLimit({
