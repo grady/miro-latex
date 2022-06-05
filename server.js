@@ -25,11 +25,10 @@ const TTL = parseInt(process.env.MAX_AGE) || 10;
 
 const app = express();
 app.disable('x-powered-by');
-app.set('trust proxy', 1);
+app.set('trust proxy', 'uniquelocal');
 
 // logging
 app.use(morgan( production ? 'short' : 'dev'));
-app.get('/ip', (request, response) => response.send(request.ip))
 
 // main routes for image handling
 app.get('/img/:id', async (req,res) => {
