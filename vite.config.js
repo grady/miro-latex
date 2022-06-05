@@ -1,5 +1,6 @@
 const {resolve} = require('path');
 const {defineConfig} = require('vite');
+const {postcssPlugin} = require('uncss');
 
 let root = 'front/'
 
@@ -12,12 +13,13 @@ module.exports = defineConfig({
       input: {
 	index: resolve(__dirname, root, 'index.html'),
 	app: resolve(__dirname, root, 'app.html'),
+	privacy: resolve(__dirname, root, 'privacy.html')
       }
     }
   },
   css: {
     postcss: {
-      plugins : [ require('uncss').postcssPlugin({html:"front/*.html"})   ],
+      plugins: [ postcssPlugin({html: "front/*.html"}) ],
     }
   }
 });
