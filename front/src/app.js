@@ -11,7 +11,7 @@ function debounce(func, timeout=250){
 async function postSVG({x, y, target}){
   let button = document.getElementById('place-button');
   let image = target.getElementsByTagName('svg')[0];
-  let title = document.getElementById('texinput').value.trim();
+  let title = document.getElementById('texinput').value.trim() || 'latex output';
   
   if(!image) return;
 
