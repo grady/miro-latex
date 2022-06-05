@@ -54,7 +54,7 @@ app.post('/img',
 	      req.get('Content-Encoding') !== 'deflate'
 	     ) // bad request
              return res.sendStatus(400);
-	   req.body = await getRawBody(req).catch(console.log);
+	   req.body = await getRawBody(req, {limit: '256kb'}).catch(console.log);
            // a random identifier
            const id = nanoid();
            // try to put body in redis: OK => created
