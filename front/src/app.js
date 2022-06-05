@@ -11,6 +11,8 @@ function debounce(func, timeout=250){
 async function postSVG({x, y, target}){
   let button = document.getElementById('place-button');
   let image = target.getElementsByTagName('svg')[0];
+  let title = document.getElementById('texinput').value.trim();
+  
   if(!image) return;
 
   button.disabled=true;
@@ -32,8 +34,7 @@ async function postSVG({x, y, target}){
     });
     let {id} = await response.json();
     let url = document.location.origin + '/img/' + id;
-    //console.log(url);
-    await miro.board.createImage({url, x, y});
+    await miro.board.createImage({url, x, y, title});
   } catch (err) {
     //console.log(err);
   }
